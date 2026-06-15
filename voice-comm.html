@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>FPS 音声コミュニケーター</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0d0f14;
+    color: #e0e6f0;
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  header {
+    background: #111827;
+    border-bottom: 2px solid #1e3a5f;
+    padding: 10px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  header h1 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #60a5fa;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  #search {
+    flex: 1;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 7px 12px;
+    color: #e0e6f0;
+    font-size: 15px;
+    outline: none;
+  }
+  #search::placeholder { color: #64748b; }
+  #search:focus { border-color: #3b82f6; }
+
+  #tabs {
+    display: flex;
+    overflow-x: auto;
+    background: #111827;
+    border-bottom: 1px solid #1e293b;
+    padding: 0 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    position: sticky;
+    top: 54px;
+    z-index: 99;
+  }
+  #tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 9px 14px;
+    font-size: 13px;
+    color: #64748b;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+    user-select: none;
+  }
+  .tab.active { color: #60a5fa; border-bottom-color: #3b82f6; }
+  .tab:hover { color: #94a3b8; }
+
+  #content {
+    padding: 12px;
+    padding-bottom: 52px;
+  }
+
+  .category { display: none; }
+  .category.active { display: block; }
+
+  #search-results { display: none; }
+  #search-results.active { display: block; }
+
+  .category-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    letter-spacing: 0.1em;
+    margin: 16px 0 8px 4px;
+  }
+
+  .word-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+    gap: 8px;
+  }
+
+  .word-btn {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 14px 6px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.1s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .word-btn:hover { background: #1e3a5f; border-color: #3b82f6; color: #e0e6f0; }
+  .word-btn:active, .word-btn.playing {
+    background: #1d4ed8;
+    border-color: #60a5fa;
+    color: #fff;
+    transform: scale(0.96);
+  }
+  .word-btn.playing::after {
+    content: '▶';
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    font-size: 9px;
+    color: #93c5fd;
+  }
+
+  .cat-0 .word-btn { border-left: 3px solid #3b82f6; }
+  .cat-1 .word-btn { border-left: 3px solid #10b981; }
+  .cat-2 .word-btn { border-left: 3px solid #f59e0b; }
+  .cat-3 .word-btn { border-left: 3px solid #ef4444; }
+  .cat-4 .word-btn { border-left: 3px solid #8b5cf6; }
+  .cat-5 .word-btn { border-left: 3px solid #06b6d4; }
+  .cat-6 .word-btn { border-left: 3px solid #f97316; }
+  .cat-7 .word-btn { border-left: 3px solid #84cc16; }
+  .cat-8 .word-btn { border-left: 3px solid #ec4899; }
+  .cat-9 .word-btn { border-left: 3px solid #a78bfa; }
+  .cat-10 .word-btn { border-left: 3px solid #34d399; }
+  .cat-11 .word-btn { border-left: 3px solid #fb923c; }
+  .cat-12 .word-btn { border-left: 3px solid #38bdf8; }
+
+  #controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #111827;
+    border-top: 1px solid #1e293b;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+  }
+  #controls label { font-size: 11px; color: #64748b; white-space: nowrap; }
+  #speed { flex: 1; accent-color: #3b82f6; }
+  #speed-val { font-size: 12px; color: #94a3b8; width: 30px; text-align: right; }
+  #stop-btn {
+    background: #7f1d1d;
+    border: 1px solid #991b1b;
+    border-radius: 8px;
+    color: #fca5a5;
+    padding: 6px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #stop-btn:active { background: #991b1b; }
+
+  #no-results {
+    text-align: center;
+    color: #475569;
+    padding: 60px 20px;
+    font-size: 15px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎮 FPS</h1>
+  <input type="text" id="search" placeholder="単語を検索..." autocomplete="off">
+</header>
+
+<div id="tabs"></div>
+
+<div id="content">
+  <div id="search-results"></div>
+  <div id="no-results">見つかりませんでした</div>
+  <div id="categories"></div>
+</div>
+
+<div id="controls">
+  <label>速度</label>
+  <input type="range" id="speed" min="0.5" max="1.8" step="0.1" value="1.0">
+  <span id="speed-val">1.0</span>
+  <button id="stop-btn">■ 停止</button>
+</div>
+
+<script>
+const DATA = [
+  {
+    name: "自分・チーム",
+    icon: "👥",
+    words: [
+      "俺", "自分", "味方", "敵", "チーム", "リーダー", "全員",
+      "一人", "みんな", "右の人", "左の人", "後ろ", "前",
+      "デュオ", "トリオ", "ソロ"
+    ]
+  },
+  {
+    name: "方向・位置",
+    icon: "🧭",
+    words: [
+      "右", "左", "前", "後ろ", "上", "下",
+      "こっち", "あっち", "そっち", "まっすぐ",
+      "向こう", "手前", "右前", "左前",
+      "右後ろ", "左後ろ", "真上", "真下",
+      "角", "裏", "横", "斜め"
+    ]
+  },
+  {
+    name: "マップ",
+    icon: "📍",
+    words: [
+      "Aサイト", "Bサイト", "Cサイト",
+      "ミッド", "ミドル", "スポーン",
+      "建物", "中", "外", "屋根",
+      "窓", "ドア", "通路", "角",
+      "橋", "坂", "壁", "入口", "出口",
+      "ベース", "高台", "下", "裏ルート",
+      "ショートカット", "開けた場所"
+    ]
+  },
+  {
+    name: "状態・HP",
+    icon: "❤️",
+    words: [
+      "いた", "いない", "死んだ", "生きてる",
+      "HP低い", "HP全快", "シールドある", "シールドない",
+      "弾切れ", "リロード中", "スキル使える", "ウルトある",
+      "大丈夫", "やばい", "ダウン", "復活待ち",
+      "ダメージ受けた", "倒した", "生存"
+    ]
+  },
+  {
+    name: "行動",
+    icon: "⚡",
+    words: [
+      "来た", "行く", "行った", "来る",
+      "見た", "見える", "見えない",
+      "撃つ", "撃った", "当てた", "外した",
+      "進む", "止まる", "待つ", "逃げる",
+      "攻める", "守る", "援護", "突っ込む",
+      "回り込む", "挟む", "集まる", "散る",
+      "戻る", "ピークする", "覗く", "引く",
+      "プッシュ", "ホールド", "クリア",
+      "爆弾植える", "解除する", "旗取る"
+    ]
+  },
+  {
+    name: "敵情報",
+    icon: "🎯",
+    words: [
+      "一人", "二人", "三人", "四人", "五人",
+      "全滅", "一人残り", "多い", "少ない",
+      "スナイパーいる", "接近してくる",
+      "ラッシュしてくる", "待ち構えてる",
+      "フランクされた", "挟まれた",
+      "向こうに見えた", "さっきいた"
+    ]
+  },
+  {
+    name: "武器・アイテム",
+    icon: "🔫",
+    words: [
+      "銃", "ライフル", "ピストル", "スナイパー",
+      "ショットガン", "SMG", "LMG",
+      "弾", "マガジン", "リロード",
+      "手榴弾", "スモーク", "フラッシュ",
+      "モロトフ", "スタン", "スキル",
+      "回復", "シールド", "防具",
+      "武器拾う", "漁る", "捨てる"
+    ]
+  },
+  {
+    name: "戦術",
+    icon: "🗺️",
+    words: [
+      "ラッシュ", "スロー", "デフォルト",
+      "スタック", "ローテ", "フランク",
+      "陽動", "囮", "援護射撃",
+      "包囲", "突破", "撤退",
+      "集合", "分散", "連携",
+      "エコ", "フルバイ", "セーブ",
+      "作戦変更", "中止", "即攻め"
+    ]
+  },
+  {
+    name: "数・時間",
+    icon: "🔢",
+    words: [
+      "一", "二", "三", "四", "五",
+      "一人", "二人", "三人", "四人", "五人",
+      "今", "すぐ", "急いで", "ゆっくり",
+      "まだ", "もう", "あと少し",
+      "時間ない", "残り少ない", "もう一回",
+      "同時に", "バラバラに"
+    ]
+  },
+  {
+    name: "コマンド",
+    icon: "📢",
+    words: [
+      "よし", "ダメ", "はい", "いいえ",
+      "わかった", "了解", "待って",
+      "来い", "行け", "撃て", "やめ",
+      "止まれ", "急げ", "助けて",
+      "押せ", "引け", "集まれ",
+      "注意", "気をつけて", "黙って",
+      "カバーして", "頼む"
+    ]
+  },
+  {
+    name: "形容詞",
+    icon: "📊",
+    words: [
+      "早い", "遅い", "近い", "遠い",
+      "強い", "弱い", "多い", "少ない",
+      "危ない", "安全", "大丈夫", "やばい",
+      "有利", "不利", "いける", "無理",
+      "きつい", "楽", "難しい", "怪しい"
+    ]
+  },
+  {
+    name: "ゲーム用語",
+    icon: "🎮",
+    words: [
+      "キル", "デス", "アシスト",
+      "ダウン", "リスポーン", "復活",
+      "ウルト", "スキル", "使える", "使えない",
+      "クロスファイア", "ヘッドショット",
+      "ノックアウト", "フィニッシュ",
+      "ラウンド勝ち", "ラウンド負け",
+      "GG", "ナイス", "グッジョブ",
+      "スクリム", "ランク", "カジュアル"
+    ]
+  },
+  {
+    name: "確認・報告",
+    icon: "📡",
+    words: [
+      "どこ", "何人", "どっち", "誰",
+      "状況は", "聞こえる", "見える",
+      "わかった", "確認", "報告",
+      "異常なし", "クリア", "問題なし",
+      "連絡", "応答して", "まだいる",
+      "ロスト", "見失った", "わからない"
+    ]
+  }
+];
+
+let totalWords = DATA.reduce((s, c) => s + c.words.length, 0);
+let currentCat = 0;
+let speechRate = 1.0;
+
+// Build tabs
+const tabsEl = document.getElementById('tabs');
+DATA.forEach((cat, i) => {
+  const t = document.createElement('div');
+  t.className = 'tab' + (i === 0 ? ' active' : '');
+  t.textContent = `${cat.icon} ${cat.name}`;
+  t.addEventListener('click', () => selectCat(i));
+  tabsEl.appendChild(t);
+});
+
+// Build categories
+const catsEl = document.getElementById('categories');
+DATA.forEach((cat, ci) => {
+  const div = document.createElement('div');
+  div.className = `category cat-${ci}` + (ci === 0 ? ' active' : '');
+  div.id = `cat-${ci}`;
+
+  const grid = document.createElement('div');
+  grid.className = 'word-grid';
+  cat.words.forEach(word => {
+    grid.appendChild(makeBtn(word, ci));
+  });
+
+  div.appendChild(grid);
+  catsEl.appendChild(div);
+});
+
+function makeBtn(word, ci) {
+  const btn = document.createElement('button');
+  btn.className = 'word-btn';
+  btn.textContent = word;
+  btn.addEventListener('click', () => speak(word, btn));
+  return btn;
+}
+
+function selectCat(i) {
+  currentCat = i;
+  document.querySelectorAll('.tab').forEach((t, idx) => t.classList.toggle('active', idx === i));
+  document.querySelectorAll('.category').forEach((c, idx) => c.classList.toggle('active', idx === i));
+  document.getElementById('search-results').classList.remove('active');
+  document.getElementById('categories').style.display = '';
+  document.getElementById('no-results').style.display = 'none';
+  document.getElementById('search').value = '';
+}
+
+// Search
+document.getElementById('search').addEventListener('input', function() {
+  const q = this.value.trim();
+  const srEl = document.getElementById('search-results');
+  const catsContainer = document.getElementById('categories');
+  const noResults = document.getElementById('no-results');
+
+  if (!q) {
+    srEl.classList.remove('active');
+    srEl.innerHTML = '';
+    catsContainer.style.display = '';
+    noResults.style.display = 'none';
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === currentCat));
+    document.querySelectorAll('.category').forEach((c, i) => c.classList.toggle('active', i === currentCat));
+    return;
+  }
+
+  srEl.innerHTML = '';
+  srEl.classList.add('active');
+  catsContainer.style.display = 'none';
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+
+  let found = 0;
+  DATA.forEach((cat, ci) => {
+    const matches = cat.words.filter(w => w.includes(q));
+    if (matches.length === 0) return;
+    found += matches.length;
+
+    const label = document.createElement('div');
+    label.className = 'category-label';
+    label.textContent = `${cat.icon} ${cat.name}`;
+    srEl.appendChild(label);
+
+    const grid = document.createElement('div');
+    grid.className = `word-grid cat-${ci}`;
+    matches.forEach(w => grid.appendChild(makeBtn(w, ci)));
+    srEl.appendChild(grid);
+  });
+
+  noResults.style.display = found === 0 ? 'block' : 'none';
+});
+
+// Speech
+let currentBtn = null;
+
+function speak(text, btn) {
+  window.speechSynthesis.cancel();
+  if (currentBtn) currentBtn.classList.remove('playing');
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'ja-JP';
+  utter.rate = speechRate;
+  utter.pitch = 1.0;
+  utter.volume = 1.0;
+
+  const voices = window.speechSynthesis.getVoices();
+  const jaVoice = voices.find(v => v.lang.startsWith('ja'));
+  if (jaVoice) utter.voice = jaVoice;
+
+  currentBtn = btn;
+  btn.classList.add('playing');
+  utter.onend = () => { btn.classList.remove('playing'); currentBtn = null; };
+  utter.onerror = () => { btn.classList.remove('playing'); currentBtn = null; };
+
+  window.speechSynthesis.speak(utter);
+}
+
+document.getElementById('speed').addEventListener('input', function() {
+  speechRate = parseFloat(this.value);
+  document.getElementById('speed-val').textContent = speechRate.toFixed(1);
+});
+
+document.getElementById('stop-btn').addEventListener('click', () => {
+  window.speechSynthesis.cancel();
+  if (currentBtn) { currentBtn.classList.remove('playing'); currentBtn = null; }
+});
+
+window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+document.title = `FPS 音声コミュニケーター (${totalWords}語)`;
+</script>
+</body>
+</html>
