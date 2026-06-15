@@ -24,14 +24,13 @@
     z-index: 100;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
   header h1 {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: #60a5fa;
-    letter-spacing: 0.05em;
     white-space: nowrap;
   }
 
@@ -40,13 +39,39 @@
     background: #1e293b;
     border: 1px solid #334155;
     border-radius: 8px;
-    padding: 7px 12px;
+    padding: 7px 10px;
     color: #e0e6f0;
-    font-size: 15px;
+    font-size: 14px;
     outline: none;
+    min-width: 0;
   }
   #search::placeholder { color: #64748b; }
   #search:focus { border-color: #3b82f6; }
+
+  /* Language toggle */
+  #lang-toggle {
+    display: flex;
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #334155;
+    flex-shrink: 0;
+  }
+  .lang-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #64748b;
+    transition: all 0.15s;
+    user-select: none;
+    border: none;
+    background: none;
+  }
+  .lang-btn.active {
+    background: #1d4ed8;
+    color: #fff;
+  }
 
   #tabs {
     display: flex;
@@ -64,8 +89,8 @@
 
   .tab {
     flex-shrink: 0;
-    padding: 9px 14px;
-    font-size: 13px;
+    padding: 9px 12px;
+    font-size: 12px;
     color: #64748b;
     cursor: pointer;
     border-bottom: 2px solid transparent;
@@ -78,12 +103,11 @@
 
   #content {
     padding: 12px;
-    padding-bottom: 52px;
+    padding-bottom: 56px;
   }
 
   .category { display: none; }
   .category.active { display: block; }
-
   #search-results { display: none; }
   #search-results.active { display: block; }
 
@@ -105,27 +129,25 @@
     background: #1e293b;
     border: 1px solid #334155;
     border-radius: 10px;
-    padding: 14px 6px;
+    padding: 10px 6px;
     text-align: center;
-    font-size: 14px;
-    font-weight: 600;
-    color: #cbd5e1;
     cursor: pointer;
     transition: all 0.1s;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     position: relative;
     overflow: hidden;
-    min-height: 52px;
+    min-height: 56px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 3px;
   }
-  .word-btn:hover { background: #1e3a5f; border-color: #3b82f6; color: #e0e6f0; }
+  .word-btn:hover { background: #1e3a5f; border-color: #3b82f6; }
   .word-btn:active, .word-btn.playing {
     background: #1d4ed8;
     border-color: #60a5fa;
-    color: #fff;
     transform: scale(0.96);
   }
   .word-btn.playing::after {
@@ -136,26 +158,42 @@
     font-size: 9px;
     color: #93c5fd;
   }
+  .w-ja {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e2e8f0;
+    line-height: 1.2;
+  }
+  .w-es {
+    font-size: 10px;
+    color: #64748b;
+    line-height: 1.2;
+    word-break: break-word;
+    hyphens: auto;
+  }
+  /* Hide sub-text of inactive language */
+  body.lang-ja .w-es { display: none; }
+  body.lang-es .w-es { display: block; color: #94a3b8; }
+  body.lang-es .w-ja { font-size: 11px; color: #64748b; font-weight: 400; }
+  body.lang-es .w-es { font-size: 14px; font-weight: 700; color: #e2e8f0; }
 
-  .cat-0 .word-btn { border-left: 3px solid #3b82f6; }
-  .cat-1 .word-btn { border-left: 3px solid #10b981; }
-  .cat-2 .word-btn { border-left: 3px solid #f59e0b; }
-  .cat-3 .word-btn { border-left: 3px solid #ef4444; }
-  .cat-4 .word-btn { border-left: 3px solid #8b5cf6; }
-  .cat-5 .word-btn { border-left: 3px solid #06b6d4; }
-  .cat-6 .word-btn { border-left: 3px solid #f97316; }
-  .cat-7 .word-btn { border-left: 3px solid #84cc16; }
-  .cat-8 .word-btn { border-left: 3px solid #ec4899; }
-  .cat-9 .word-btn { border-left: 3px solid #a78bfa; }
+  .cat-0  .word-btn { border-left: 3px solid #3b82f6; }
+  .cat-1  .word-btn { border-left: 3px solid #10b981; }
+  .cat-2  .word-btn { border-left: 3px solid #f59e0b; }
+  .cat-3  .word-btn { border-left: 3px solid #ef4444; }
+  .cat-4  .word-btn { border-left: 3px solid #8b5cf6; }
+  .cat-5  .word-btn { border-left: 3px solid #06b6d4; }
+  .cat-6  .word-btn { border-left: 3px solid #f97316; }
+  .cat-7  .word-btn { border-left: 3px solid #84cc16; }
+  .cat-8  .word-btn { border-left: 3px solid #ec4899; }
+  .cat-9  .word-btn { border-left: 3px solid #a78bfa; }
   .cat-10 .word-btn { border-left: 3px solid #34d399; }
   .cat-11 .word-btn { border-left: 3px solid #fb923c; }
   .cat-12 .word-btn { border-left: 3px solid #38bdf8; }
 
   #controls {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 0; left: 0; right: 0;
     background: #111827;
     border-top: 1px solid #1e293b;
     padding: 8px 16px;
@@ -166,19 +204,17 @@
   }
   #controls label { font-size: 11px; color: #64748b; white-space: nowrap; }
   #speed { flex: 1; accent-color: #3b82f6; }
-  #speed-val { font-size: 12px; color: #94a3b8; width: 30px; text-align: right; }
+  #speed-val { font-size: 12px; color: #94a3b8; width: 28px; text-align: right; }
   #stop-btn {
     background: #7f1d1d;
     border: 1px solid #991b1b;
     border-radius: 8px;
     color: #fca5a5;
-    padding: 6px 14px;
+    padding: 6px 12px;
     font-size: 13px;
     cursor: pointer;
     white-space: nowrap;
   }
-  #stop-btn:active { background: #991b1b; }
-
   #no-results {
     text-align: center;
     color: #475569;
@@ -188,18 +224,22 @@
   }
 </style>
 </head>
-<body>
+<body class="lang-ja">
 
 <header>
   <h1>🎮 FPS</h1>
-  <input type="text" id="search" placeholder="単語を検索..." autocomplete="off">
+  <input type="text" id="search" placeholder="検索 / buscar..." autocomplete="off">
+  <div id="lang-toggle">
+    <button class="lang-btn active" data-lang="ja">日本語</button>
+    <button class="lang-btn" data-lang="es">Español</button>
+  </div>
 </header>
 
 <div id="tabs"></div>
 
 <div id="content">
   <div id="search-results"></div>
-  <div id="no-results">見つかりませんでした</div>
+  <div id="no-results">見つかりませんでした / No encontrado</div>
   <div id="categories"></div>
 </div>
 
@@ -211,169 +251,167 @@
 </div>
 
 <script>
+// Each word: [japanese, spanish]
 const DATA = [
   {
-    name: "自分・チーム",
-    icon: "👥",
+    name: "自分・チーム", icon: "👥",
     words: [
-      "俺", "自分", "味方", "敵", "チーム", "リーダー", "全員",
-      "一人", "みんな", "右の人", "左の人", "後ろ", "前",
-      "デュオ", "トリオ", "ソロ"
+      ["俺","yo"],["自分","yo mismo"],["味方","aliado"],["敵","enemigo"],
+      ["チーム","equipo"],["リーダー","líder"],["全員","todos"],
+      ["一人","uno solo"],["みんな","todos"],["右の人","el de la derecha"],
+      ["左の人","el de la izquierda"],["後ろ","atrás"],["前","adelante"],
+      ["デュオ","dúo"],["トリオ","trío"],["ソロ","solo"]
     ]
   },
   {
-    name: "方向・位置",
-    icon: "🧭",
+    name: "方向・位置", icon: "🧭",
     words: [
-      "右", "左", "前", "後ろ", "上", "下",
-      "こっち", "あっち", "そっち", "まっすぐ",
-      "向こう", "手前", "右前", "左前",
-      "右後ろ", "左後ろ", "真上", "真下",
-      "角", "裏", "横", "斜め"
+      ["右","derecha"],["左","izquierda"],["前","adelante"],["後ろ","atrás"],
+      ["上","arriba"],["下","abajo"],["こっち","aquí"],["あっち","allá"],
+      ["そっち","ahí"],["まっすぐ","recto"],["向こう","al otro lado"],
+      ["手前","aquí delante"],["右前","derecha adelante"],["左前","izquierda adelante"],
+      ["右後ろ","atrás derecha"],["左後ろ","atrás izquierda"],
+      ["真上","justo arriba"],["真下","justo abajo"],
+      ["角","esquina"],["裏","detrás"],["横","al lado"],["斜め","diagonal"]
     ]
   },
   {
-    name: "マップ",
-    icon: "📍",
+    name: "マップ", icon: "📍",
     words: [
-      "Aサイト", "Bサイト", "Cサイト",
-      "ミッド", "ミドル", "スポーン",
-      "建物", "中", "外", "屋根",
-      "窓", "ドア", "通路", "角",
-      "橋", "坂", "壁", "入口", "出口",
-      "ベース", "高台", "下", "裏ルート",
-      "ショートカット", "開けた場所"
+      ["Aサイト","sitio A"],["Bサイト","sitio B"],["Cサイト","sitio C"],
+      ["ミッド","medio"],["スポーン","spawn"],["建物","edificio"],
+      ["中","dentro"],["外","fuera"],["屋根","techo"],["窓","ventana"],
+      ["ドア","puerta"],["通路","pasillo"],["角","esquina"],["橋","puente"],
+      ["坂","rampa"],["壁","pared"],["入口","entrada"],["出口","salida"],
+      ["ベース","base"],["高台","elevación"],["裏ルート","ruta trasera"],
+      ["ショートカット","atajo"],["開けた場所","zona abierta"],
+      ["遮蔽物","cobertura"],["射線","línea de fuego"]
     ]
   },
   {
-    name: "状態・HP",
-    icon: "❤️",
+    name: "状態・HP", icon: "❤️",
     words: [
-      "いた", "いない", "死んだ", "生きてる",
-      "HP低い", "HP全快", "シールドある", "シールドない",
-      "弾切れ", "リロード中", "スキル使える", "ウルトある",
-      "大丈夫", "やばい", "ダウン", "復活待ち",
-      "ダメージ受けた", "倒した", "生存"
+      ["いた","estaba ahí"],["いない","no hay nadie"],["死んだ","muerto"],
+      ["生きてる","vivo"],["HP低い","vida baja"],["HP全快","vida llena"],
+      ["シールドある","escudo completo"],["シールドない","sin escudo"],
+      ["弾切れ","sin munición"],["リロード中","recargando"],
+      ["スキル使える","habilidad lista"],["ウルトある","ultimate lista"],
+      ["大丈夫","estoy bien"],["やばい","peligro"],["ダウン","caído"],
+      ["復活待ち","esperando revivir"],["ダメージ受けた","recibí daño"],
+      ["倒した","eliminado"],["生存","sobreviviente"]
     ]
   },
   {
-    name: "行動",
-    icon: "⚡",
+    name: "行動", icon: "⚡",
     words: [
-      "来た", "行く", "行った", "来る",
-      "見た", "見える", "見えない",
-      "撃つ", "撃った", "当てた", "外した",
-      "進む", "止まる", "待つ", "逃げる",
-      "攻める", "守る", "援護", "突っ込む",
-      "回り込む", "挟む", "集まる", "散る",
-      "戻る", "ピークする", "覗く", "引く",
-      "プッシュ", "ホールド", "クリア",
-      "爆弾植える", "解除する", "旗取る"
+      ["来た","llegó"],["行く","voy"],["行った","fue"],["来る","viene"],
+      ["見た","vi"],["見える","veo"],["見えない","no veo"],
+      ["撃つ","disparar"],["撃った","disparé"],["当てた","acerté"],["外した","fallé"],
+      ["進む","avanzar"],["止まる","parar"],["待つ","esperar"],
+      ["隠れる","esconderse"],["走る","correr"],["歩く","caminar"],["逃げる","huir"],
+      ["攻める","atacar"],["守る","defender"],["援護","cubrir"],
+      ["突っ込む","entrar"],["回り込む","flanquear"],["挟む","cruzar fuego"],
+      ["集まる","juntarse"],["散る","dispersarse"],["戻る","volver"],
+      ["ピーク","asomar"],["覗く","mirar"],["引く","retirarse"],
+      ["プッシュ","push"],["ホールド","hold"],["クリア","despejado"],
+      ["爆弾植える","plantar bomba"],["解除する","desactivar"],["旗取る","tomar bandera"]
     ]
   },
   {
-    name: "敵情報",
-    icon: "🎯",
+    name: "敵情報", icon: "🎯",
     words: [
-      "一人", "二人", "三人", "四人", "五人",
-      "全滅", "一人残り", "多い", "少ない",
-      "スナイパーいる", "接近してくる",
-      "ラッシュしてくる", "待ち構えてる",
-      "フランクされた", "挟まれた",
-      "向こうに見えた", "さっきいた"
+      ["一人","uno"],["二人","dos"],["三人","tres"],["四人","cuatro"],["五人","cinco"],
+      ["全滅","todos eliminados"],["一人残り","queda uno"],["多い","muchos"],["少ない","pocos"],
+      ["スナイパーいる","hay francotirador"],["接近してくる","se acerca"],
+      ["ラッシュしてくる","están rushando"],["待ち構えてる","están esperando"],
+      ["フランクされた","me flanquearon"],["挟まれた","rodeado"],
+      ["向こうに見えた","lo vi allá"],["さっきいた","estaba hace un momento"]
     ]
   },
   {
-    name: "武器・アイテム",
-    icon: "🔫",
+    name: "武器・アイテム", icon: "🔫",
     words: [
-      "銃", "ライフル", "ピストル", "スナイパー",
-      "ショットガン", "SMG", "LMG",
-      "弾", "マガジン", "リロード",
-      "手榴弾", "スモーク", "フラッシュ",
-      "モロトフ", "スタン", "スキル",
-      "回復", "シールド", "防具",
-      "武器拾う", "漁る", "捨てる"
+      ["銃","arma"],["ライフル","rifle"],["ピストル","pistola"],
+      ["スナイパー","francotirador"],["ショットガン","escopeta"],
+      ["SMG","SMG"],["LMG","LMG"],["弾","munición"],["マガジン","cargador"],
+      ["リロード","recargar"],["手榴弾","granada"],["スモーク","humo"],
+      ["フラッシュ","flash"],["モロトフ","molotov"],["スタン","aturdidor"],
+      ["スキル","habilidad"],["回復","curación"],["シールド","escudo"],
+      ["防具","armadura"],["武器拾う","recoger arma"],["捨てる","soltar"]
     ]
   },
   {
-    name: "戦術",
-    icon: "🗺️",
+    name: "戦術", icon: "🗺️",
     words: [
-      "ラッシュ", "スロー", "デフォルト",
-      "スタック", "ローテ", "フランク",
-      "陽動", "囮", "援護射撃",
-      "包囲", "突破", "撤退",
-      "集合", "分散", "連携",
-      "エコ", "フルバイ", "セーブ",
-      "作戦変更", "中止", "即攻め"
+      ["ラッシュ","rush"],["スロー","slow"],["デフォルト","default"],
+      ["スタック","stack"],["ローテ","rotación"],["フランク","flanqueo"],
+      ["陽動","distracción"],["囮","señuelo"],["援護射撃","fuego de cobertura"],
+      ["包囲","rodear"],["突破","romper"],["撤退","retirada"],
+      ["集合","reunirse"],["分散","dispersarse"],["連携","coordinación"],
+      ["エコ","eco"],["フルバイ","full buy"],["セーブ","guardar"],
+      ["作戦変更","cambiar estrategia"],["中止","cancelar"],["即攻め","rush inmediato"]
     ]
   },
   {
-    name: "数・時間",
-    icon: "🔢",
+    name: "数・時間", icon: "🔢",
     words: [
-      "一", "二", "三", "四", "五",
-      "一人", "二人", "三人", "四人", "五人",
-      "今", "すぐ", "急いで", "ゆっくり",
-      "まだ", "もう", "あと少し",
-      "時間ない", "残り少ない", "もう一回",
-      "同時に", "バラバラに"
+      ["一","uno"],["二","dos"],["三","tres"],["四","cuatro"],["五","cinco"],
+      ["一人","uno"],["二人","dos"],["三人","tres"],["四人","cuatro"],["五人","cinco"],
+      ["今","ahora"],["すぐ","ya"],["急いで","rápido"],["ゆっくり","despacio"],
+      ["まだ","todavía"],["もう","ya"],["あと少し","poco más"],
+      ["時間ない","sin tiempo"],["もう一回","otra vez"],["同時に","al mismo tiempo"]
     ]
   },
   {
-    name: "コマンド",
-    icon: "📢",
+    name: "コマンド", icon: "📢",
     words: [
-      "よし", "ダメ", "はい", "いいえ",
-      "わかった", "了解", "待って",
-      "来い", "行け", "撃て", "やめ",
-      "止まれ", "急げ", "助けて",
-      "押せ", "引け", "集まれ",
-      "注意", "気をつけて", "黙って",
-      "カバーして", "頼む"
+      ["よし","bien"],["ダメ","no"],["はい","sí"],["いいえ","no"],
+      ["わかった","entendido"],["了解","copiado"],["待って","espera"],
+      ["来い","ven"],["行け","ve"],["撃て","dispara"],["やめ","alto"],
+      ["止まれ","detente"],["急げ","apúrate"],["助けて","ayuda"],
+      ["押せ","avanza"],["引け","retrocede"],["集まれ","júntense"],
+      ["注意","cuidado"],["気をつけて","ten cuidado"],["カバーして","cúbreme"],
+      ["頼む","por favor"],["黙って","silencio"]
     ]
   },
   {
-    name: "形容詞",
-    icon: "📊",
+    name: "形容詞", icon: "📊",
     words: [
-      "早い", "遅い", "近い", "遠い",
-      "強い", "弱い", "多い", "少ない",
-      "危ない", "安全", "大丈夫", "やばい",
-      "有利", "不利", "いける", "無理",
-      "きつい", "楽", "難しい", "怪しい"
+      ["早い","rápido"],["遅い","lento"],["近い","cerca"],["遠い","lejos"],
+      ["強い","fuerte"],["弱い","débil"],["多い","muchos"],["少ない","pocos"],
+      ["危ない","peligroso"],["安全","seguro"],["大丈夫","está bien"],
+      ["やばい","peligro"],["有利","ventaja"],["不利","desventaja"],
+      ["いける","podemos"],["無理","imposible"],["きつい","difícil"],
+      ["楽","fácil"],["怪しい","sospechoso"]
     ]
   },
   {
-    name: "ゲーム用語",
-    icon: "🎮",
+    name: "ゲーム用語", icon: "🎮",
     words: [
-      "キル", "デス", "アシスト",
-      "ダウン", "リスポーン", "復活",
-      "ウルト", "スキル", "使える", "使えない",
-      "クロスファイア", "ヘッドショット",
-      "ノックアウト", "フィニッシュ",
-      "ラウンド勝ち", "ラウンド負け",
-      "GG", "ナイス", "グッジョブ",
-      "スクリム", "ランク", "カジュアル"
+      ["キル","kill"],["デス","muerte"],["アシスト","asistencia"],
+      ["ダウン","derribado"],["リスポーン","respawn"],["復活","revivir"],
+      ["ウルト","ultimate"],["スキル","habilidad"],["使える","disponible"],["使えない","no disponible"],
+      ["クロスファイア","fuego cruzado"],["ヘッドショット","tiro en la cabeza"],
+      ["ノックアウト","derribar"],["フィニッシュ","rematar"],
+      ["ラウンド勝ち","ganamos"],["ラウンド負け","perdimos"],
+      ["GG","GG"],["ナイス","nice"],["グッジョブ","buen trabajo"],
+      ["ランク","ranked"],["カジュアル","casual"]
     ]
   },
   {
-    name: "確認・報告",
-    icon: "📡",
+    name: "確認・報告", icon: "📡",
     words: [
-      "どこ", "何人", "どっち", "誰",
-      "状況は", "聞こえる", "見える",
-      "わかった", "確認", "報告",
-      "異常なし", "クリア", "問題なし",
-      "連絡", "応答して", "まだいる",
-      "ロスト", "見失った", "わからない"
+      ["どこ","dónde"],["何人","cuántos"],["どっち","qué lado"],["誰","quién"],
+      ["状況は","situación"],["聞こえる","te escucho"],["見える","te veo"],
+      ["わかった","entendido"],["確認","confirmado"],["報告","reporte"],
+      ["異常なし","sin novedad"],["クリア","despejado"],["問題なし","sin problema"],
+      ["連絡","contacto"],["応答して","responde"],["まだいる","sigo aquí"],
+      ["ロスト","perdido"],["見失った","lo perdí"],["わからない","no sé"]
     ]
   }
 ];
 
-let totalWords = DATA.reduce((s, c) => s + c.words.length, 0);
+let currentLang = 'ja';
 let currentCat = 0;
 let speechRate = 1.0;
 
@@ -392,14 +430,9 @@ const catsEl = document.getElementById('categories');
 DATA.forEach((cat, ci) => {
   const div = document.createElement('div');
   div.className = `category cat-${ci}` + (ci === 0 ? ' active' : '');
-  div.id = `cat-${ci}`;
-
   const grid = document.createElement('div');
   grid.className = 'word-grid';
-  cat.words.forEach(word => {
-    grid.appendChild(makeBtn(word, ci));
-  });
-
+  cat.words.forEach(w => grid.appendChild(makeBtn(w, ci)));
   div.appendChild(grid);
   catsEl.appendChild(div);
 });
@@ -407,8 +440,18 @@ DATA.forEach((cat, ci) => {
 function makeBtn(word, ci) {
   const btn = document.createElement('button');
   btn.className = 'word-btn';
-  btn.textContent = word;
-  btn.addEventListener('click', () => speak(word, btn));
+
+  const ja = document.createElement('span');
+  ja.className = 'w-ja';
+  ja.textContent = word[0];
+
+  const es = document.createElement('span');
+  es.className = 'w-es';
+  es.textContent = word[1];
+
+  btn.appendChild(ja);
+  btn.appendChild(es);
+  btn.addEventListener('click', () => speak(currentLang === 'ja' ? word[0] : word[1], btn));
   return btn;
 }
 
@@ -421,6 +464,17 @@ function selectCat(i) {
   document.getElementById('no-results').style.display = 'none';
   document.getElementById('search').value = '';
 }
+
+// Language toggle
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    currentLang = this.dataset.lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b === this));
+    document.body.className = 'lang-' + currentLang;
+    // Update speak handlers in search results
+    document.getElementById('stop-btn').click();
+  });
+});
 
 // Search
 document.getElementById('search').addEventListener('input', function() {
@@ -446,8 +500,8 @@ document.getElementById('search').addEventListener('input', function() {
 
   let found = 0;
   DATA.forEach((cat, ci) => {
-    const matches = cat.words.filter(w => w.includes(q));
-    if (matches.length === 0) return;
+    const matches = cat.words.filter(w => w[0].includes(q) || w[1].toLowerCase().includes(q.toLowerCase()));
+    if (!matches.length) return;
     found += matches.length;
 
     const label = document.createElement('div');
@@ -472,14 +526,14 @@ function speak(text, btn) {
   if (currentBtn) currentBtn.classList.remove('playing');
 
   const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'ja-JP';
+  utter.lang = currentLang === 'ja' ? 'ja-JP' : 'es-ES';
   utter.rate = speechRate;
   utter.pitch = 1.0;
   utter.volume = 1.0;
 
   const voices = window.speechSynthesis.getVoices();
-  const jaVoice = voices.find(v => v.lang.startsWith('ja'));
-  if (jaVoice) utter.voice = jaVoice;
+  const voice = voices.find(v => v.lang.startsWith(currentLang === 'ja' ? 'ja' : 'es'));
+  if (voice) utter.voice = voice;
 
   currentBtn = btn;
   btn.classList.add('playing');
@@ -500,7 +554,6 @@ document.getElementById('stop-btn').addEventListener('click', () => {
 });
 
 window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-document.title = `FPS 音声コミュニケーター (${totalWords}語)`;
 </script>
 </body>
 </html>
